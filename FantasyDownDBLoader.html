@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+
+</script>
+
+<script>
+
+
+//Parse.initialize("B8UZw7IfUONOurVCYhLw1KnknMFtl4T4CIZBr11Q", "fFGYnW88IOcUnPGtSfm6logj8biDdJaQ8bxAQZ4k");
+//https://jsfiddle.net/snoakes84/k2v1d16r/#
+
+
+var start = new Date();
+
+//Parse.initialize("B8UZw7IfUONOurVCYhLw1KnknMFtl4T4CIZBr11Q", "fFGYnW88IOcUnPGtSfm6logj8biDdJaQ8bxAQZ4k");
+
+$.ajaxSetup({
+	headers: {
+		'Ocp-Apim-Subscription-Key': '69c9f4a581ec4499b634f53b40dd1a4d'
+	}
+});
+
+$(function() {
+	var teams = ['ARI'],//, 'CHI', 'GB', 'NYG', 'DET', 'WAS', 'PHI', 'PIT', 'LA', 'SF', 'CLE', 'IND', 'DAL', 'KC', 'SD', 'DEN', 'NYJ', 'NE', 'OAK', 'TEN', 'BUF', 'MIN', 'ATL', 'MIA', 'NO', 'CIN', 'SEA', 'TB', 'CAR', 'JAX', 'BAL', 'HOU'],
+		teamPromises = [],
+		playerPromises = [],
+		weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+
+	teams.forEach(function(team) {
+		teamPromises.push(getPlayerDetails(team));
+	});
+
+	Promise.all(teamPromises).then(function(playersByTeam) {
+		var players = [].concat.apply([], playersByTeam);
+
+		players.forEach(function(player) {
+			weeks.forEach(function(week) {
+				playerPromises.push(getWeekDetails(player, week));
+			});
+		})
+
+		Promise.all(playerPromises).then(function(weekData) {
+			console.log(weekData);
+			var elapsed = (new Date() - start) / 1000;
+			console.log('All operations took ' + elapsed + ' seconds.');
+		});
+	});
+});
+
+function getPlayerDetails(team) {
+	return $.get('https://api.fantasydata.net/nfl/v2/JSON/Players/' + team);
+}
+
+function getWeekDetails(player, week) {
+	return $.get('https://api.fantasydata.net/nfl/v2/JSON/PlayerGameStatsByPlayerID/2015/' + week + '/' + player.PlayerID);
+}
+
+
+
+</script>
+</head>
+<body>
+
+  <p>This example calls a function which performs a calculation, and returns the result:</p>
+
+  <p id="demo"></p>
+  
+  
+
+
+
+
+
+    
+
+</body>
+
+
+</html>
+
